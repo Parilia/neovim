@@ -10,7 +10,7 @@ mv ~/.config/nvim ~/.config/nvim_backup
 git clone https://github.com/Parilia/neovim.git ~/.config/nvim
 ```
 # nvim switcher, add to your bashrc, zshrc or POSIX Shell.
-To add a new config simply rename the nvim folder in the .config, if you cloning a new one change the name of the nvim folder in the command to what you want it to or use the above command to back up your config as getting a new one will overrite your existing one,
+To add a new config simply rename the nvim folder in the .config, if you are cloning a new one change the name of the nvim folder in the command to what you want it to or use the above command to back up your config as getting a new one will overrite your existing one or may not even download.
 
 ```bash
 # nvim switcher, you can invoke your config using the alias or by typing "nvims" into your shell
