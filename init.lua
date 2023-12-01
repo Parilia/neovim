@@ -79,47 +79,35 @@ require('lazy').setup({
     },
   },
 
---formatting
-{
-  "stevearc/conform.nvim",
-  event = { "BufWritePre" },
-  cmd = { "ConformInfo" },
-  keys = {
-    {
-      -- Customize or remove this keymap to your liking
-      "<leader>f",
-      function()
-        require("conform").format({ async = true, lsp_fallback = true })
-      end,
-      mode = "",
-      desc = "Format buffer",
-    },
-  },
-  -- Everything in opts will be passed to setup()
-  opts = {
-    -- Define your formatters
-    formatters_by_ft = {
-      lua = { "stylua" },
-      python = { "isort", "black" },
-      javascript = { { "prettierd", "prettier" } },
-      html = { { "htmlbeautifier"}},
-    },
-    -- Set up format-on-save
-    format_on_save = { timeout_ms = 500, lsp_fallback = true },
-    -- Customize formatters
-    formatters = {
-      shfmt = {
-        prepend_args = { "-i", "2" },
+  --formatting
+  {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    keys = {},
+    -- Everything in opts will be passed to setup()
+    opts = {
+      -- Define your formatters
+      formatters_by_ft = {
+        lua = { "stylua" },
+        python = { "isort", "black" },
+        javascript = { { "prettierd", "prettier" } },
+        html = { { "htmlbeautifier" } },
+      },
+      -- Set up format-on-save
+      format_on_save = { timeout_ms = 500, lsp_fallback = true },
+      -- Customize formatters
+      formatters = {
+        shfmt = {
+          prepend_args = { "-i", "2" },
+        },
       },
     },
+    init = function()
+      -- If you want the formatexpr, here is the place to set it
+      vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+    end,
   },
-  init = function()
-    -- If you want the formatexpr, here is the place to set it
-    vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-  end,
-},
-
-
 
 
   {
@@ -138,7 +126,7 @@ require('lazy').setup({
     },
   },
 
-  -- Useful plugin to show you pending keybinds.
+  -- Useful plugin to show you pending keybinds. Invoked by pressing <leader>
   { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -178,30 +166,12 @@ require('lazy').setup({
     },
   },
 
-  --formatting
-
-
-
-
-
-  --     "navarasu/onedark.nvim",
-  --     opts = {
-  --       options = {
-  --         style = 'warmer',
-  --       },
-  --     },
-  --     priority = 1000,
-  --     config = function()
-  --       vim.cmd.colorscheme 'onedark'
-  --     end,
-  --   },
 
   -- Automatically add closing tags for HTML and JSX
   {
     "windwp/nvim-ts-autotag",
     opts = {},
   },
-
 
 
   {
@@ -262,10 +232,9 @@ require('lazy').setup({
       },
     },
   },
+
   --Find and Replace using spectre
   { 'nvim-pack/nvim-spectre' },
-
-  -- File Explorer
 
   {
     -- Highlight, edit, and navigate code
@@ -278,12 +247,10 @@ require('lazy').setup({
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   { import = 'custom.plugins' },
 }, {})
+
 --Neorg auto unfold
 vim.cmd([[ set nofoldenable]])
 
@@ -298,13 +265,13 @@ end
 
 vim.api.nvim_set_keymap("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
 -- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
+
 -- resize netrw
 vim.g.netrw_winsize = 20
 vim.g.netrw_banner = 0
 -- netrw tree style
 vim.g.netrw_liststyle = 3
+
 -- Set highlight on search
 vim.o.hlsearch = false
 
@@ -343,34 +310,41 @@ vim.o.showmode = false
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+
 vim.opt.scrolloff = 8      -- scroll page when cursor is 8 lines from top/bottom
 vim.opt.tabstop = 4        -- Number of spaces tabs count for
 vim.opt.shiftwidth = 4     -- tabs for indentation
 vim.opt.smartindent = true -- Insert indents automatically
 vim.opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
+
+-- Open netrw file explorer
 vim.keymap.set("n", "<leader>e", "<cmd>Lexplore<cr>", { desc = "File Explorer" })
 
+-- Toggle Relative Line Numbering
 vim.keymap.set("n", "<leader>lN", "<cmd>set rnu<cr>", { desc = "Relative line numbering On" })
 vim.keymap.set("n", "<leader>ln", "<cmd>set rnu!<cr>", { desc = "Relative line numbering Off" })
 
+-- Free up space to be usied as a leader key
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- buffer navigation
 vim.keymap.set("n", "<Tab>", ":bnext <CR>")       -- Tab goes to next buffer
 vim.keymap.set("n", "<S-Tab>", ":bprevious <CR>") -- Shift+Tab goes to previous buffer
--- Remap for dealing with word wrap
+
+-- Remap for dealing with word wrap, ctrl+w to toggle
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-
 vim.keymap.set("n", "<C-w>", "<cmd>set wrap!<cr>", { desc = "Toggle Word Wrap" })
+vim.opt.wrap = false
+
 --Save on Ctrl+s
 vim.keymap.set("n", "<C-s>", "<cmd>w<cr>", { desc = "Save" })
 
-vim.opt.wrap = false
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -486,7 +460,7 @@ vim.defer_fn(function()
   }
 end, 0)
 
--- Better Keybinds for netrw
+-- Better Keybinds for netrw file explorer
 vim.api.nvim_create_autocmd('filetype', {
   pattern = 'netrw',
   desc = 'Better mappings for netrw',
@@ -559,7 +533,7 @@ require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
+  --  ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
   ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
