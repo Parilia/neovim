@@ -281,6 +281,9 @@ vim.wo.number = true
 -- Enable mouse mode
 -- vim.o.mouse = 'a'
 
+--Set spell
+vim.opt.spell = true
+vim.opt.spelllang = 'en_gb'
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
