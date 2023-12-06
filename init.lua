@@ -45,7 +45,7 @@ require('lazy').setup({
   {
     'windwp/nvim-autopairs',
     event = "InsertEnter",
-    opts = {} -- this is equalent to setup({}) function
+    opts = {} -- this is equivalent to setup({}) function
   },
   -- snippets
   {
@@ -84,6 +84,8 @@ require('lazy').setup({
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
     cmd = { "ConformInfo" },
+    priority = 100,
+    primary = true,
     keys = {},
     -- Everything in opts will be passed to setup()
     opts = {
@@ -141,7 +143,8 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk,
+          { buffer = bufnr, desc = 'Preview git hunk' })
         -- don't override the built-in and fugitive keymaps
         local gs = package.loaded.gitsigns
         vim.keymap.set({ 'n', 'v' }, ']c', function()
@@ -193,7 +196,7 @@ require('lazy').setup({
     lazy = false,
     opts = {
       indent = {
-        char = "│",
+        char = "|",
       },
       scope = {
         enabled = false,
@@ -292,6 +295,9 @@ vim.o.clipboard = 'unnamedplus'
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Allow cursor to move where there is no text in visual block mode
+vim.opt.virtualedit = 'block'
+
 -- Save undo history
 vim.o.undofile = true
 
@@ -314,11 +320,20 @@ vim.o.showmode = false
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Enable autoformat
+vim.g.autoformat = true
+
+
+vim.opt.grepprg = "rg --vimgrep"
+vim.opt.grepformat = "%f:%l:%c:%m"
+vim.opt.formatoptions = "jcroqlnt"
+
 vim.opt.scrolloff = 8      -- scroll page when cursor is 8 lines from top/bottom
 vim.opt.tabstop = 4        -- Number of spaces tabs count for
 vim.opt.shiftwidth = 4     -- tabs for indentation
 vim.opt.smartindent = true -- Insert indents automatically
 vim.opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
+vim.opt.autowrite = true   -- Enable auto write
 
 -- [[ Basic Keymaps ]]
 
