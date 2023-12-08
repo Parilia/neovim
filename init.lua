@@ -23,7 +23,13 @@ require('lazy').setup({
   { 'nvim-tree/nvim-web-devicons' },
   -- Git related plugins
 
-  { 'akinsho/toggleterm.nvim',    version = "*", config = true },
+  {
+    'akinsho/toggleterm.nvim',
+    version = "*",
+    opts = {
+      shell = 'zsh', -- Set the shell you want to use inside of toggleterm
+    },
+  },
 
   {
     -- LSP Configuration & Plugins
@@ -129,7 +135,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds. Invoked by pressing <leader>
-  { 'folke/which-key.nvim',  opts = {} },
+  { 'folke/which-key.nvim',       opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -248,6 +254,82 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
+
+  -- Open files from terminal buffers without creating a nested session
+  {
+    "willothy/flatten.nvim",
+    lazy = false,
+    priority = 1001,
+    opts = function()
+      ---@type Terminal?
+      local saved_terminal
+
+      return {
+        window = {
+          open = "alternate",
+        },
+        callbacks = {
+          should_block = function(argv)
+            -- Note that argv contains all the parts of the CLI command, including
+            -- Neovim's path, commands, options and files.
+            -- See: :help v:argv
+
+            -- In this case, we would block if we find the `-b` flag
+            -- This allows you to use `nvim -b file1` instead of
+            -- `nvim --cmd 'let g:flatten_wait=1' file1`
+            return vim.tbl_contains(argv, "-b")
+
+            -- Alternatively, we can block if we find the diff-mode option
+            -- return vim.tbl_contains(argv, "-d")
+          end,
+          pre_open = function()
+            local term = require("toggleterm.terminal")
+            local termid = term.get_focused_id()
+            saved_terminal = term.get(termid)
+          end,
+          post_open = function(bufnr, winnr, ft, is_blocking)
+            if is_blocking and saved_terminal then
+              -- Hide the terminal while it's blocking
+              saved_terminal:close()
+            else
+              -- If it's a normal file, just switch to its window
+              vim.api.nvim_set_current_win(winnr)
+
+              -- If we're in a different wezterm pane/tab, switch to the current one
+              -- Requires willothy/wezterm.nvim
+              --require("wezterm").switch_pane.id(
+              --tonumber(os.getenv("WEZTERM_PANE"))
+              --)
+            end
+
+            -- If the file is a git commit, create one-shot autocmd to delete its buffer on write
+            -- If you just want the toggleable terminal integration, ignore this bit
+            if ft == "gitcommit" or ft == "gitrebase" then
+              vim.api.nvim_create_autocmd("BufWritePost", {
+                buffer = bufnr,
+                once = true,
+                callback = vim.schedule_wrap(function()
+                  vim.api.nvim_buf_delete(bufnr, {})
+                end),
+              })
+            end
+          end,
+          block_end = function()
+            -- After blocking ends (for a git commit, etc), reopen the terminal
+            vim.schedule(function()
+              if saved_terminal then
+                saved_terminal:open()
+                saved_terminal = nil
+              end
+            end)
+          end,
+        },
+      }
+    end,
+  },
+
+
+
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
@@ -257,7 +339,7 @@ require('lazy').setup({
 --Neorg auto unfold
 vim.cmd([[ set nofoldenable]])
 
--- Custom terminal [LazyGit]
+-- Custom terminal [LazyGit] Requires lazygit to be installed https://github.com/jesseduffield/lazygit
 local Terminal = require('toggleterm.terminal').Terminal
 local lazygit  = Terminal:new({ cmd = "lazygit", hidden = true, direction = 'float' })
 
@@ -267,7 +349,23 @@ function _lazygit_toggle()
 end
 
 vim.api.nvim_set_keymap("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+
+-- Custom terminal [vifm] Requires vifm to be installed https://github.com/vifm/vifm
+local Terminal = require('toggleterm.terminal').Terminal
+local vifm     = Terminal:new({ cmd = "vifm -c view", hidden = true, direction = 'float' })
+
+
+function _vifm_toggle()
+  vifm:toggle()
+end
+
+vim.api.nvim_set_keymap("n", "<leader>v", "<cmd>lua _vifm_toggle()<CR>",
+  { noremap = true, silent = true, desc = "[v]ifm file manager" })
+
 -- [[ Setting options ]]
+
+-- Set default shell for use inside neovim, will otherwise default to system default
+vim.opt.shell = 'zsh'
 
 -- resize netrw
 vim.g.netrw_winsize = 20
@@ -287,6 +385,7 @@ vim.wo.number = true
 --Set spell
 vim.opt.spell = true
 vim.opt.spelllang = 'en_gb'
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
@@ -330,7 +429,7 @@ vim.opt.formatoptions = "jcroqlnt"
 
 vim.opt.scrolloff = 8      -- scroll page when cursor is 8 lines from top/bottom
 vim.opt.tabstop = 4        -- Number of spaces tabs count for
-vim.opt.shiftwidth = 4     -- tabs for indentation
+vim.opt.shiftwidth = 2     -- tabs for indentation
 vim.opt.smartindent = true -- Insert indents automatically
 vim.opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
 vim.opt.autowrite = true   -- Enable auto write
@@ -347,7 +446,7 @@ vim.keymap.set("n", "<leader>e", "<cmd>Lexplore<cr>", { desc = "File Explorer" }
 vim.keymap.set("n", "<leader>lN", "<cmd>set rnu<cr>", { desc = "Relative line numbering On" })
 vim.keymap.set("n", "<leader>ln", "<cmd>set rnu!<cr>", { desc = "Relative line numbering Off" })
 
--- Free up space to be usied as a leader key
+-- Free up space to be used as a leader key
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- buffer navigation
