@@ -4,9 +4,9 @@ My personal neovim config
 ## Requiremtns
 Latest <a href="https://neovim.io/">neovim</a> [stable]<br>
 ### Soft Requirements
-<a href="https://github.com/vifm/vifm">vifm</a> <br>  (Other file managers can be hot swapped in, see the vifm custom terminal in the init. Also netrw is setup so you dont need this if you dont want it, just comment out or remove the vifm custom terminal in the init.)<br>
+<a href="https://github.com/vifm/vifm">vifm</a> <br>  (Other file managers can be hot swapped in, see the vifm custom terminal in the init. Also netrw is setup so you dont need this if you dont want it, just comment out or remove the vifm custom terminal in the init.)<br><br>
 <a href="https://github.com/jesseduffield/lazygit">LazyGit</a>  <br> (If you are going to use git then I highly reccommend this.)<br>
-
+<br>
 # Back up your exsisting config
 ```bash
 mv ~/.config/nvim ~/.config/nvim_backup
