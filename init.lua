@@ -361,7 +361,7 @@ end
 
 vim.api.nvim_set_keymap(
 	'n',
-	'<leader>v',
+	'<leader>e',
 	'<cmd>lua _vifm_toggle()<CR>',
 	{ noremap = true, silent = true, desc = '[v]ifm file manager' }
 )
@@ -371,11 +371,8 @@ vim.api.nvim_set_keymap(
 -- Set default shell for use inside neovim, will otherwise default to system default
 vim.opt.shell = 'zsh'
 
--- resize netrw
-vim.g.netrw_winsize = 20
-vim.g.netrw_banner = 0
--- netrw tree style
-vim.g.netrw_liststyle = 3
+-- Disable pearl warning
+vim.g.loaded_pearl_provider = 0
 
 -- Set highlight on search
 vim.o.hlsearch = false
@@ -443,9 +440,6 @@ vim.opt.autowrite = true -- Enable auto write
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
-
--- Open netrw file explorer
-vim.keymap.set('n', '<leader>e', '<cmd>Lexplore<cr>', { desc = 'File Explorer' })
 
 -- Toggle Relative Line Numbering
 vim.keymap.set('n', '<leader>lN', '<cmd>set rnu<cr>', { desc = 'Relative line numbering On' })
@@ -598,23 +592,6 @@ vim.defer_fn(function()
 		},
 	}
 end, 0)
-
--- Better Keybinds for netrw file explorer
-vim.api.nvim_create_autocmd('filetype', {
-	pattern = 'netrw',
-	desc = 'Better mappings for netrw',
-	callback = function()
-		local bind = function(lhs, rhs)
-			vim.keymap.set('n', lhs, rhs, { remap = true, buffer = true })
-		end
-
-		-- edit new file
-		bind('a', '%:w<CR>:buffer #<CR>')
-
-		-- rename file
-		bind('r', 'R')
-	end,
-})
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
