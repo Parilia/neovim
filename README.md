@@ -2,7 +2,7 @@
 My personal neovim config
 
 ## Requiremtns
-Latest <a href="https://neovim.io/">neovim</a> [stable]<br>
+<a href="https://neovim.io/">neovim</a> 0.9+<br>
 ### Soft Requirements
 <a href="https://github.com/vifm/vifm">vifm</a> <br>  (Other file managers can be hot swapped in, see the vifm custom terminal in the init. My vifm configs can be found <a href="https://github.com/Parilia/Dotfiles/tree/main/vifm">here</a>. **You at the very least will need this setting inside the vifmrc:** <code>set vicmd=nvim</code><br><br>
 <a href="https://github.com/jesseduffield/lazygit">LazyGit</a>  <br> (If you are going to use git then I highly reccommend this.)<br>
